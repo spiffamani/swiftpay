@@ -8,8 +8,6 @@
 
 > No middlemen. No delays. No hidden fees. Just work, deliver, get paid.
 
----
-
 ## The Problem
 
 Freelancers worldwide face the same frustrations:
@@ -40,8 +38,6 @@ SwiftPay uses **Soroban smart contracts** to hold payment in escrow while work i
    (If dispute → on-chain resolution process)
 ```
 
----
-
 ## Tech Stack
 
 | Layer | Technology |
@@ -50,8 +46,6 @@ SwiftPay uses **Soroban smart contracts** to hold payment in escrow while work i
 | Smart Contracts | Rust + Soroban (Stellar) |
 | Payments | USDC on Stellar network |
 | Wallet | Freighter Wallet integration |
-
----
 
 ## Project Structure
 
