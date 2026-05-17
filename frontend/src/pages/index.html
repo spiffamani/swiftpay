@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SwiftPay — Decentralized Freelance Payments on Stellar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #080810;
+      --white: #f0f0f8;
+      --indigo: #5b5bd6;
+      --indigo-light: #7c7ce8;
+      --indigo-dim: rgba(91,91,214,0.15);
+      --usdc: #2775ca;
+      --stellar: #14b8a6;
+      --muted: rgba(240,240,248,0.45);
+      --border: rgba(240,240,248,0.08);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* GLOW BLOBS */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(91,91,214,0.18) 0%, transparent 70%);
+      top: -200px; left: -100px;
+      animation: drift1 20s ease-in-out infinite;
+    }
+    .blob-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(20,184,166,0.12) 0%, transparent 70%);
+      bottom: 0; right: -150px;
+      animation: drift2 25s ease-in-out infinite;
+    }
+    @keyframes drift1 {
+      0%, 100% { transform: translate(0,0); }
+      50% { transform: translate(80px, 60px); }
+    }
+    @keyframes drift2 {
+      0%, 100% { transform: translate(0,0); }
+      50% { transform: translate(-60px, -80px); }
+    }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8,8,16,0.7);
+      backdrop-filter: blur(20px);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--white);
+      text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo span { color: var(--indigo-light); }
+    .nav-links { display: flex; align-items: center; gap: 32px; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+    .nav-cta {
+      background: var(--indigo);
+      color: var(--white) !important;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-weight: 500 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--indigo-light) !important; color: var(--white) !important; }
+
+    /* HERO */
+    .hero {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 140px 24px 80px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--indigo-dim);
+      border: 1px solid rgba(91,91,214,0.3);
+      color: var(--indigo-light);
+      font-size: 0.8rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: 100px;
+      margin-bottom: 32px;
+      animation: fadeUp 0.8s ease both;
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: var(--stellar);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      max-width: 900px;
+      margin-bottom: 24px;
+      animation: fadeUp 0.8s 0.1s ease both;
+    }
+    h1 .gradient {
+      background: linear-gradient(135deg, var(--indigo-light) 0%, var(--stellar) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      color: var(--muted);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      max-width: 560px;
+      margin-bottom: 40px;
+      font-weight: 300;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.8s 0.3s ease both;
+    }
+    .btn-primary {
+      background: var(--indigo);
+      color: var(--white);
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-primary:hover { background: var(--indigo-light); transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.95rem;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, transform 0.2s;
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-secondary:hover { border-color: rgba(240,240,248,0.3); transform: translateY(-2px); }
+
+    /* STATS BAR */
+    .stats-bar {
+      position: relative; z-index: 1;
+      display: flex;
+      justify-content: center;
+      gap: 0;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 700px;
+      margin: 80px auto 0;
+      overflow: hidden;
+      background: rgba(255,255,255,0.02);
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .stat {
+      flex: 1;
+      padding: 28px 24px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--indigo-light);
+      display: block;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* HOW IT WORKS */
+    section {
+      position: relative; z-index: 1;
+      padding: 100px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--indigo-light);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      color: var(--muted);
+      max-width: 500px;
+      font-weight: 300;
+      margin-bottom: 64px;
+    }
+
+    /* STEPS */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2px;
+      background: var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .step {
+      background: var(--black);
+      padding: 40px 32px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .step:hover { background: rgba(91,91,214,0.06); }
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: rgba(91,91,214,0.15);
+      line-height: 1;
+      margin-bottom: 20px;
+    }
+    .step-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .step-desc { color: var(--muted); font-size: 0.9rem; font-weight: 300; line-height: 1.7; }
+    .step-icon {
+      position: absolute;
+      top: 32px; right: 32px;
+      font-size: 1.5rem;
+      opacity: 0.6;
+    }
+
+    /* FEATURES */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .feature {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+    .feature:hover {
+      border-color: rgba(91,91,214,0.3);
+      transform: translateY(-4px);
+    }
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      display: block;
+    }
+    .feature-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .feature-desc { color: var(--muted); font-size: 0.9rem; font-weight: 300; line-height: 1.7; }
+
+    /* TECH STACK */
+    .tech-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .tech-tag {
+      background: var(--indigo-dim);
+      border: 1px solid rgba(91,91,214,0.2);
+      color: var(--indigo-light);
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    /* CONTRIBUTE */
+    .contribute-box {
+      background: linear-gradient(135deg, rgba(91,91,214,0.12) 0%, rgba(20,184,166,0.08) 100%);
+      border: 1px solid rgba(91,91,214,0.2);
+      border-radius: 24px;
+      padding: 64px 48px;
+      text-align: center;
+    }
+    .contribute-box h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .contribute-box p {
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 40px;
+      font-weight: 300;
+    }
+    .contribute-tags {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+    .ctag {
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid;
+    }
+    .ctag-rust { color: #f97316; border-color: rgba(249,115,22,0.3); background: rgba(249,115,22,0.08); }
+    .ctag-ts { color: #60a5fa; border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.08); }
+    .ctag-soroban { color: var(--stellar); border-color: rgba(20,184,166,0.3); background: rgba(20,184,166,0.08); }
+    .ctag-usdc { color: #2775ca; border-color: rgba(39,117,202,0.3); background: rgba(39,117,202,0.08); }
+
+    /* FOOTER */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .footer-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--muted);
+    }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--white); }
+    .footer-right { color: var(--muted); font-size: 0.8rem; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .stats-bar { flex-direction: column; }
+      .stat { border-right: none; border-bottom: 1px solid var(--border); }
+      .stat:last-child { border-bottom: none; }
+      .contribute-box { padding: 40px 24px; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#" class="nav-logo">Swift<span>Pay</span> 💸</a>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#contribute">Contribute</a>
+      <a href="https://github.com/spiffamani/swiftpay" target="_blank" class="nav-cta">View on GitHub →</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Built on Stellar · Powered by Soroban · Paid in USDC
+    </div>
+    <h1>Freelance Payments.<br><span class="gradient">Trustless. Instant.</span></h1>
+    <p class="hero-sub">SwiftPay uses Soroban smart contracts to hold payment in escrow while you work. No middlemen, no delays, no 20% platform fees.</p>
+    <div class="hero-actions">
+      <a href="https://github.com/spiffamani/swiftpay" target="_blank" class="btn-primary">⭐ Star on GitHub</a>
+      <a href="https://github.com/spiffamani/swiftpay/issues" target="_blank" class="btn-secondary">View Open Issues →</a>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat">
+        <span class="stat-value">0%</span>
+        <span class="stat-label">Platform Fees</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">USDC</span>
+        <span class="stat-label">Stable Payments</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">&lt; 5s</span>
+        <span class="stat-label">Settlement Time</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">100%</span>
+        <span class="stat-label">Open Source</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <section id="how">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">Simple. Secure. On-chain.</h2>
+    <p class="section-sub">Three steps from job post to payment — all enforced by smart contracts, not trust.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <span class="step-icon">📋</span>
+        <div class="step-title">Client Posts Job</div>
+        <div class="step-desc">Client posts a job with a USDC budget and locks funds into a Soroban escrow smart contract on the Stellar network.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <span class="step-icon">⚡</span>
+        <div class="step-title">Freelancer Delivers</div>
+        <div class="step-desc">Freelancer applies, gets hired, completes the work, and submits for client review — all tracked on-chain.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <span class="step-icon">💸</span>
+        <div class="step-title">Instant Payment</div>
+        <div class="step-desc">Client approves the work and USDC is released instantly to the freelancer's Stellar wallet. No delays. No fees.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" style="padding-top: 0;">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Built different.</h2>
+    <p class="section-sub">Everything traditional freelance platforms get wrong, SwiftPay gets right.</p>
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon">🔐</span>
+        <div class="feature-title">Trustless Escrow</div>
+        <div class="feature-desc">Funds are locked in a Soroban smart contract — neither party can touch them until the agreed conditions are met.</div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🌍</span>
+        <div class="feature-title">Global & Borderless</div>
+        <div class="feature-desc">Anyone with a Stellar wallet can use SwiftPay. No bank account required, no country restrictions.</div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">⚖️</span>
+        <div class="feature-title">On-chain Dispute Resolution</div>
+        <div class="feature-desc">If something goes wrong, a transparent dispute contract handles the resolution — no biased platform admins.</div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">💵</span>
+        <div class="feature-title">Paid in USDC</div>
+        <div class="feature-desc">All payments are in USDC — a stable, dollar-pegged digital currency. No crypto volatility to worry about.</div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🔓</span>
+        <div class="feature-title">Fully Open Source</div>
+        <div class="feature-desc">Every line of code is public and auditable. No hidden logic, no black boxes, no platform risk.</div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">🚀</span>
+        <div class="feature-title">Freighter Wallet Integration</div>
+        <div class="feature-desc">Connect in one click using the Freighter browser extension. No seed phrases exposed, no custody risks.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TECH STACK -->
+  <section style="padding-top: 0;">
+    <div class="section-label">Tech Stack</div>
+    <h2 class="section-title">Built with the best tools.</h2>
+    <p class="section-sub" style="margin-bottom: 32px;">Modern, production-grade technologies chosen for performance and security.</p>
+    <div class="tech-grid">
+      <span class="tech-tag">React + TypeScript</span>
+      <span class="tech-tag">Rust</span>
+      <span class="tech-tag">Soroban Smart Contracts</span>
+      <span class="tech-tag">Stellar Network</span>
+      <span class="tech-tag">USDC</span>
+      <span class="tech-tag">Freighter Wallet</span>
+      <span class="tech-tag">Tailwind CSS</span>
+      <span class="tech-tag">Vite</span>
+    </div>
+  </section>
+
+  <!-- CONTRIBUTE -->
+  <section id="contribute" style="padding-top: 0;">
+    <div class="contribute-box">
+      <h2>Earn USDC by Contributing</h2>
+      <p>SwiftPay is part of the Stellar Wave Program on Drips. Contribute to open issues and earn real USDC rewards every Wave cycle.</p>
+      <div class="contribute-tags">
+        <span class="ctag ctag-rust">🦀 Rust / Soroban</span>
+        <span class="ctag ctag-ts">⚡ TypeScript / React</span>
+        <span class="ctag ctag-soroban">🌊 Stellar Ecosystem</span>
+        <span class="ctag ctag-usdc">💵 Earn USDC</span>
+      </div>
+      <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+        <a href="https://github.com/spiffamani/swiftpay/issues" target="_blank" class="btn-primary">Browse Open Issues</a>
+        <a href="https://github.com/spiffamani/swiftpay/blob/main/CONTRIBUTING.md" target="_blank" class="btn-secondary">Read Contributing Guide</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">SwiftPay 💸</div>
+    <div class="footer-links">
+      <a href="https://github.com/spiffamani/swiftpay" target="_blank">GitHub</a>
+      <a href="https://github.com/spiffamani/swiftpay/issues" target="_blank">Issues</a>
+      <a href="https://github.com/spiffamani/swiftpay/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a>
+      <a href="https://stellar.org/soroban" target="_blank">Soroban Docs</a>
+    </div>
+    <div class="footer-right">MIT License · Built on Stellar</div>
+  </footer>
+
+</body>
+</html>
