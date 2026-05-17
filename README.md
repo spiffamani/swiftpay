@@ -1,8 +1,10 @@
-# SwiftPay 💸
+# SwiftPay 
 
 **Decentralized Freelance Payments on Stellar**
 
-SwiftPay is an open-source platform that connects freelancers and clients through trustless, instant payments powered by [Soroban](https://stellar.org/soroban) smart contracts and USDC on the Stellar network.
+ **Live Website:** https://spiffamani.github.io/swiftpay  
+ **GitHub:** https://github.com/spiffamani/swiftpay  
+ **Part of the Stellar Wave Program on Drips**
 
 > No middlemen. No delays. No hidden fees. Just work, deliver, get paid.
 
