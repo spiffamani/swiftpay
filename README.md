@@ -19,9 +19,7 @@ Freelancers worldwide face the same frustrations:
 ## The Solution
 
 SwiftPay uses **Soroban smart contracts** to hold payment in escrow while work is completed. When both parties are satisfied, USDC is released instantly. If there's a dispute, a transparent resolution process kicks in — no platform deciding who wins.
-
 ---
-
 ## How It Works
 
 ```
@@ -65,7 +63,6 @@ swiftpay/
 ├── docs/                      # Documentation
 └── .github/ISSUE_TEMPLATE/    # Issue templates for contributors
 ```
-
 ---
 
 ## Roadmap
@@ -95,7 +92,6 @@ swiftpay/
 This project is part of the [Stellar Wave Program](https://drips.network/wave/stellar) on Drips. Contributors earn **USDC rewards** for merged pull requests!
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) to get started. No experience with blockchain required for frontend issues!
-
 ---
 
 ## License
