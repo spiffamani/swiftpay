@@ -6,7 +6,7 @@
  **GitHub:** https://github.com/spiffamani/swiftpay  
  **Part of the Stellar Wave Program on Drips**
 
-> No middlemen. No delays. No hidden fees. Just work, deliver, get paid.
+> No middlemen. No delays. No hidden fees. Just work, deliver, get paid in USDC.
 
 ## The Problem
 
