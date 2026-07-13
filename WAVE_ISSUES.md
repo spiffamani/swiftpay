@@ -4,153 +4,138 @@ Ready to paste into GitHub. Label each with `good first issue` and `Stellar Wave
 
 ---
 
-## ISSUE 1 — [TRIVIAL] Build the landing page hero section UI
+## ISSUE 1 — [TRIVIAL] Add toast notifications for Apply Now button
 
 **Labels:** `good first issue`, `Stellar Wave`, `frontend`
 **Complexity:** Trivial — 100 points
 
 **Summary:**
-Improve the existing landing page hero section in `frontend/src/pages/LandingPage.tsx`. The current version is basic — make it visually polished with proper spacing, gradient text, and a clean call-to-action section.
+When a user clicks "Apply Now" on a job card in `frontend/src/pages/BrowseJobs.tsx`, show a toast notification confirming the application. Use the `sonner` package which is already available.
 
 **Acceptance Criteria:**
-- [ ] Hero headline uses gradient text (indigo to purple)
-- [ ] "Find Work" and "Hire a Freelancer" buttons are clearly styled
-- [ ] Layout is responsive on mobile and desktop
-- [ ] Tailwind CSS used throughout (no custom CSS files)
+- [ ] Install sonner: `npm install sonner`
+- [ ] Add `<Toaster />` to `App.tsx`
+- [ ] Show success toast: "Application submitted! The client will review your profile."
+- [ ] Toast disappears after 3 seconds
+- [ ] Styled to match dark theme
 
 ---
 
-## ISSUE 2 — [TRIVIAL] Create a reusable JobCard component
+## ISSUE 2 — [TRIVIAL] Add character counter to Post Job description field
 
 **Labels:** `good first issue`, `Stellar Wave`, `frontend`
 **Complexity:** Trivial — 100 points
 
 **Summary:**
-Create a reusable `JobCard` component in `frontend/src/components/JobCard.tsx` that displays a job listing. It will be used on the Browse Jobs page.
-
-**Props it should accept:**
-```typescript
-{
-  title: string;
-  budget: number;       // in USDC
-  category: string;
-  postedBy: string;     // wallet address (shortened)
-  description: string;
-}
-```
+Add a character counter below the description textarea in `frontend/src/pages/PostJob.tsx`. Show remaining characters out of a 500 character max.
 
 **Acceptance Criteria:**
-- [ ] Component created at `frontend/src/components/JobCard.tsx`
-- [ ] Displays all props cleanly
-- [ ] Budget shown as "X USDC"
-- [ ] Wallet address shortened (first 4 + last 4 chars)
-- [ ] Styled with Tailwind CSS
+- [ ] Counter shows "X / 500 characters"
+- [ ] Counter turns red when over 400 characters
+- [ ] Form validation rejects descriptions over 500 characters
+- [ ] Counter updates in real time as user types
 
 ---
 
-## ISSUE 3 — [MEDIUM] Integrate Freighter Wallet connection
+## ISSUE 3 — [TRIVIAL] Add empty state illustration to Browse Jobs
+
+**Labels:** `good first issue`, `Stellar Wave`, `frontend`
+**Complexity:** Trivial — 100 points
+
+**Summary:**
+When no jobs match the search/filter in `BrowseJobs.tsx`, show a better empty state with an illustration and helpful message instead of plain text.
+
+**Acceptance Criteria:**
+- [ ] Empty state has an emoji/icon
+- [ ] Message: "No jobs found. Try a different category or search term."
+- [ ] "Clear filters" button that resets search and category
+- [ ] Styled consistently with the rest of the app
+
+---
+
+## ISSUE 4 — [MEDIUM] Build Job Detail page
 
 **Labels:** `Stellar Wave`, `frontend`
 **Complexity:** Medium — 150 points
 
 **Summary:**
-Implement real Freighter wallet connection in `frontend/src/components/Navbar.tsx`. Currently the connect button is a placeholder. Use the `@stellar/freighter-api` package (already in package.json) to connect a real Stellar wallet.
-
-**Expected behaviour:**
-- User clicks "Connect Wallet"
-- Freighter browser extension opens for approval
-- On success, navbar shows shortened wallet address
-- On error, shows a friendly error message
+Create a new page at `frontend/src/pages/JobDetail.tsx` that shows the full details of a job when a user clicks on a job card. Add a route at `/jobs/:id`.
 
 **Acceptance Criteria:**
-- [ ] Uses `@stellar/freighter-api` — `isConnected()`, `getPublicKey()`
-- [ ] Handles case where Freighter is not installed (show install link)
-- [ ] Wallet address stored in React state
-- [ ] Address displayed as `GABC...XYZ` format
-
----
-
-## ISSUE 4 — [MEDIUM] Build the Post a Job form
-
-**Labels:** `Stellar Wave`, `frontend`
-**Complexity:** Medium — 150 points
-
-**Summary:**
-Implement the job posting form in `frontend/src/pages/PostJob.tsx`. Currently a placeholder. Build a form that collects job details from the client.
-
-**Form fields:**
-- Job title (text input)
-- Category (dropdown: Design, Development, Writing, Marketing, Other)
-- Description (textarea)
-- Budget in USDC (number input)
-- Deadline (date picker)
-
-**Acceptance Criteria:**
-- [ ] All fields present and validated (no empty submission)
-- [ ] Budget must be a positive number
-- [ ] On submit, logs form data to console (blockchain integration is a separate issue)
-- [ ] Styled with Tailwind CSS
+- [ ] New file `frontend/src/pages/JobDetail.tsx`
+- [ ] Route added in `App.tsx`: `/jobs/:id`
+- [ ] JobCard links to `/jobs/:id` on click
+- [ ] Page shows: title, category, full description, budget, deadline, poster address
+- [ ] "Apply for this Job" button
+- [ ] Back button to return to Browse Jobs
 - [ ] Mobile responsive
 
 ---
 
-## ISSUE 5 — [MEDIUM] Build the Browse Jobs page with mock data
+## ISSUE 5 — [MEDIUM] Add Freelancer Profile page
 
 **Labels:** `Stellar Wave`, `frontend`
 **Complexity:** Medium — 150 points
 
 **Summary:**
-Implement `frontend/src/pages/BrowseJobs.tsx` using the `JobCard` component (Issue #2). Use mock data for now — real blockchain data comes later.
+Create a freelancer profile page at `frontend/src/pages/Profile.tsx` that shows a freelancer's wallet address, completed jobs, earned USDC, and skills.
 
 **Acceptance Criteria:**
-- [ ] Page renders a grid of at least 6 mock job listings using `JobCard`
-- [ ] Filter bar at top with category filter (All, Design, Dev, Writing)
-- [ ] Filtering works client-side
-- [ ] Empty state shown when no jobs match filter
-- [ ] Mobile responsive grid (1 col mobile, 2 col tablet, 3 col desktop)
+- [ ] New file `frontend/src/pages/Profile.tsx`
+- [ ] Route added: `/profile/:address`
+- [ ] Shows: wallet address (shortened), total earned, completed jobs count, skills tags
+- [ ] Edit profile button (UI only, no backend needed)
+- [ ] Mobile responsive
 
 ---
 
-## ISSUE 6 — [HIGH] Implement escrow contract tests
+## ISSUE 6 — [MEDIUM] Add network mismatch warning banner
 
-**Labels:** `Stellar Wave`, `contracts`
-**Complexity:** High — 200 points
+**Labels:** `Stellar Wave`, `frontend`
+**Complexity:** Medium — 150 points
 
 **Summary:**
-Write comprehensive tests for the escrow contract in `contracts/src/escrow.rs` using the Soroban test utilities.
-
-**Tests to cover:**
-- Successful escrow initialization
-- Payment release by client
-- Refund flow
-- Unauthorized release attempt (should fail)
-- Double release attempt (should fail)
+Use the `useFreighter` hook in `frontend/src/hooks/useFreighter.ts` to detect if the user's Freighter wallet is connected to the wrong network (not Testnet). Show a warning banner at the top of the page.
 
 **Acceptance Criteria:**
-- [ ] All 5 test cases implemented
-- [ ] Tests use `soroban-sdk` testutils
-- [ ] All tests pass with `cargo test`
-- [ ] Each test has a clear name and comment explaining what it checks
+- [ ] Banner appears below Navbar when network !== "TESTNET"
+- [ ] Message: "Wrong network detected. Please switch to Stellar Testnet in Freighter."
+- [ ] Banner is dismissible
+- [ ] Yellow/warning color scheme
+- [ ] Only shows when wallet is connected
 
 ---
 
-## ISSUE 7 — [HIGH] Implement dispute contract
+## ISSUE 7 — [HIGH] Integrate escrow contract with Post Job form
 
-**Labels:** `Stellar Wave`, `contracts`
+**Labels:** `Stellar Wave`, `contracts`, `frontend`
 **Complexity:** High — 200 points
 
 **Summary:**
-Create a new file `contracts/src/dispute.rs` implementing a basic dispute resolution system. When a dispute is raised, a third-party resolver address (set at initialization) can split the funds between client and freelancer.
-
-**Functions needed:**
-- `raise_dispute(env)` — called by either party
-- `resolve_dispute(env, client_percent: u32, freelancer_percent: u32)` — called by resolver
-- `get_dispute_status(env)` — returns current status
+Connect the Post Job form (`PostJob.tsx`) to the Soroban escrow contract (`contracts/src/escrow.rs`). When a client posts a job and hires a freelancer, call the contract's `initialize` function to lock USDC in escrow.
 
 **Acceptance Criteria:**
-- [ ] File created at `contracts/src/dispute.rs`
-- [ ] Registered in `contracts/src/lib.rs`
-- [ ] Only resolver address can call `resolve_dispute`
-- [ ] Percentages must add up to 100
-- [ ] At least 3 tests written
-- [ ] Added to README contracts section
+- [ ] New utility file `frontend/src/utils/contractClient.ts`
+- [ ] `initializeEscrow(client, freelancer, token, amount)` function implemented
+- [ ] Uses `@stellar/stellar-sdk` to build and submit transaction
+- [ ] Post Job form calls this when "Hire Freelancer" is clicked
+- [ ] Loading state shown during transaction
+- [ ] Success/error feedback shown to user
+- [ ] Works on Stellar Testnet
+
+---
+
+## ISSUE 8 — [HIGH] Add dispute resolution UI
+
+**Labels:** `Stellar Wave`, `frontend`
+**Complexity:** High — 200 points
+
+**Summary:**
+Build a dispute resolution flow in the Dashboard. When a job is `in-progress`, both client and freelancer should be able to raise a dispute. Add a modal that explains the process and calls the dispute contract.
+
+**Acceptance Criteria:**
+- [ ] "Raise Dispute" button visible on in-progress jobs in Dashboard
+- [ ] Modal explains: "A neutral resolver will split the funds based on evidence provided"
+- [ ] Dispute status shown as a new badge: "disputed"
+- [ ] Integrates with `contracts/src/escrow.rs` `refund` function
+- [ ] Works on Stellar Testnet
