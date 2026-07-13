@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import JobCard from "../components/JobCard";
 
 type Job = {
   id: string;
@@ -130,43 +131,10 @@ export default function BrowseJobs() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((job) => (
-            <div
+            <JobCard
               key={job.id}
-              className="bg-gray-900 border border-gray-800 rounded-xl p-6 flex flex-col gap-4 hover:border-indigo-700 transition"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <h2 className="text-lg font-semibold leading-snug">{job.title}</h2>
-                <span className="bg-indigo-900 text-indigo-300 text-xs px-2 py-1 rounded-full whitespace-nowrap">
-                  {job.category}
-                </span>
-              </div>
-
-              <p className="text-gray-400 text-sm flex-1">{job.description}</p>
-
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-500">
-                  By {job.postedBy}
-                </span>
-                <span className="text-green-400 font-semibold">
-                  {job.budget} USDC
-                </span>
-              </div>
-
-              <button
-                onClick={() => handleApply(job.id)}
-                disabled={appliedJobs.includes(job.id)}
-                className={`w-full py-2 rounded-lg text-sm font-medium transition ${
-                  appliedJobs.includes(job.id)
-                    ? "bg-green-900 text-green-300 cursor-not-allowed"
-                    : "bg-indigo-600 hover:bg-indigo-500 text-white"
-                }`}
-              >
-                {appliedJobs.includes(job.id) ? "✓ Applied" : "Apply Now"}
-              </button>
-            </div>
+              {...job}
+              onApply={handleApply}
+              applied={appliedJobs.includes(job.id)}
+            />
           ))}
-        </div>
-      )}
-    </div>
-  );
-}
