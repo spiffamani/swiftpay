@@ -4,6 +4,7 @@ import LandingPage from "./pages/LandingPage";
 import Dashboard from "./pages/Dashboard";
 import PostJob from "./pages/PostJob";
 import BrowseJobs from "./pages/BrowseJobs";
+import NotFound from "./pages/NotFound";
 import Navbar from "./components/Navbar";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/post-job" element={<PostJob />} />
           <Route path="/browse" element={<BrowseJobs />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </div>
     </Router>
