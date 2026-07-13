@@ -172,5 +172,19 @@ export default function PostJob() {
           )}
         </div>
 
-        {/* Escrow notice */}
-        <div
+      {/* Escrow notice */}
+        <div className="bg-indigo-950 border border-indigo-800 rounded-lg p-4 text-sm text-indigo-300">
+          💡 When you hire a freelancer, your budget will be locked in a Soroban
+          smart contract escrow. Funds are only released when you approve the work.
+        </div>
+
+        <button
+          onClick={handleSubmit}
+          className="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-lg font-medium transition text-white"
+        >
+          Post Job
+        </button>
+      </div>
+    </div>
+  );
+}
