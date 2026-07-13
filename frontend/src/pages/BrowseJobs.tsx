@@ -138,3 +138,8 @@ export default function BrowseJobs() {
               applied={appliedJobs.includes(job.id)}
             />
           ))}
+          </div>
+      )}
+    </div>
+  );
+}
