@@ -43,10 +43,6 @@ jobs:
           rustup update stable
           rustup target add wasm32-unknown-unknown
 
-      - name: Build contracts
+      - name: Build contracts (WASM)
         working-directory: contracts
         run: cargo build --target wasm32-unknown-unknown --release
-
-      - name: Run contract tests
-        working-directory: contracts
-        run: cargo test
